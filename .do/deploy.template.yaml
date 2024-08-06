@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/andrewsomething/app-platform-json-schema/d47641e90bdd2c0088f3f7b5eac9ad54a33afe55/deploy_button_spec.json
+spec:
+  alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+  features:
+  - buildpack-stack=ubuntu-22
+  ingress:
+    rules:
+    - component:
+        name: app
+      match:
+        path:
+          prefix: /
+  name: fider-app
+  region: tor
+  services:
+    - name: app
+      envs:
+      - key: BASE_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${APP_URL}
+      - key: DATABASE_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${db.DATABASE_URL}
+      - key: JWT_SECRET
+        scope: RUN_AND_BUILD_TIME
+        value: replace-me-somewhere
+        type: SECRET
+      - key: EMAIL_NOREPLY
+        scope: RUN_AND_BUILD_TIME
+        value: noreply@example.com
+      http_port: 3000
+      image:
+        registry: getfider
+        registry_type: DOCKER_HUB
+        repository: fider
+        tag: stable
+      instance_count: 2
+      instance_size_slug: apps-s-1vcpu-1gb
+  databases:
+    - name: db
+      engine: PG
